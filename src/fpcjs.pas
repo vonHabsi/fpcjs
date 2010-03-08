@@ -159,12 +159,20 @@ begin
   for i := 0 to argc-1 do
   begin
     {$ifndef fpc}
-    inc(argv,i);
-    pom := pjsval(argv^);
-    dec(argv,i);
+    // inc(argv,i); pom := pjsval(argv^); dec(argv,i);}   // this original code does not work in delphi 7
+    // pom := TArrayOfPjsval(argv)[i];                    // for some reason this is not working either, assuming type TArrayOfPjsval = array of pjsval;
+    pom := pjsval(integer(argv)+i*sizeof(pjsval));        // working hack
     {$else}
     pom := pjsval(argv+i);
     {$endif}
+    if JSValIsNull(pom^) then
+      write('[Null]');
+    if JSValIsVoid(pom^) then
+      write('[Void]');
+    if JSValIsObject(pom^) then
+      write('[Object]');
+    {if JSValIsNumber(pom^) then
+      write('[Number]');}
     if JSValIsString(pom^) then
       write(JSStringToString(JSValToJSString(pom^)));
     if JSValIsInt(pom^) then
@@ -220,7 +228,12 @@ begin
   Runtime := ARuntime;
   cx := JS_NewContext(ARuntime.rt, $1000);
   gl := JS_NewObject(cx,@global_class,nil,nil);
-  JS_InitStandardClasses(cx, gl);
+  try
+	  JS_InitStandardClasses(cx, gl);
+  except
+  	on e:Exception do
+	  	writeln('Error JS_InitStandardClasses: ',e.Message);
+  end;
   fu := JS_DefineFunction(cx, gl, 'echo', @echo, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
 end;
 
@@ -246,7 +259,6 @@ begin
   filename := nil;
   lineno := 0;
   result := JS_EvaluateScript(cx, gl, pchar(ACode), length(ACode), filename, lineno, @rval) = JS_TRUE;
-  //writeln('fn=',string(filename),' lineno=',lineno);
 end;
 
 function TFpcJsScript.EvaluateFile(AFileName: string): boolean;
@@ -300,7 +312,7 @@ begin
       vtBoolean: a[i] := BoolToJSVal(AParameters[i].VBoolean);
       vtExtended: a[i] := DoubleToJSVal(cx,AParameters[i].VExtended^);
     else
-      writeln('FATAL: ',i,'. je neznamy typ');
+      writeln('FATAL: ',i,'. is unknown type');
       halt(1);
     end;
   // call the function
@@ -388,7 +400,13 @@ begin
   // call
   rv := itm.Callback(va);
   // release params
+  //FIXME: this crash for some reasons
+  {$ifdef FPC}
   result := JsResult(rv,cx,rval,va);
+  {$else}
+  writeln('//FIXME: fpc_global_callback - undefined result for DELPHI');
+  result := JS_FALSE;
+  {$endif}
 end;    
 
 procedure TFpcJsScript.RegisterFunction(AName : string; ACallback : TFpcJsCallback);
@@ -402,7 +420,10 @@ begin
   i := TFpcJsCallbackItem.Create;
   i.Script := self;
   i.Name := AName;
-  i.Funct := JS_DefineFunction(cx, gl, pchar(AName), @fpc_global_callback, 0, JSPROP_ENUMERATE); 
+  {$ifndef FPC}
+  writeln('warning: TFpcJsScript.RegisterFunction may not work in Delphi');
+  {$endif}
+  i.Funct := JS_DefineFunction(cx, gl, pchar(AName), @fpc_global_callback, 0, JSPROP_ENUMERATE);
   //ncx := JS_NewContext(Runtime.rt, $1000);
   //ngl := JS_NewObject(cx,@intf_bridge_method_class,nil,gl);
   //ngl2 := JS_DefineObject(cx,gl,'novy',@intf_bridge_method_class,nil,JSPROP_ENUMERATE);
