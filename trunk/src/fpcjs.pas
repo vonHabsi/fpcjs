@@ -402,7 +402,7 @@ begin
   // release params
   //FIXME: this crash for some reasons
   {$ifdef FPC}
-  result := JsResult(rv,cx,rval,va);
+  result := JsResult(rv,cx,rval,@va);
   {$else}
   writeln('//FIXME: fpc_global_callback - undefined result for DELPHI');
   result := JS_FALSE;
