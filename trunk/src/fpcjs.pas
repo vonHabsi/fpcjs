@@ -151,10 +151,15 @@ function echo(cx: PJSContext; obj: PJSObject; argc: uintN; argv, rval: pjsval): 
 When called from JS, it print all arguments to standard input, use \n for new line
 Also this is excelent demo how to obtain parameters from JS call of pascal function because it handle all 4 data types (string,(long)int(eger),double,boolean)
 }
-var i : integer;
+var i,scale : integer;
     pom : pjsval;
+    ss : JSVal;
 begin
   // useful function for debuging purposes from javascript
+  // if 'scale' variable is set, use it to determine number of visible digits
+  scale := -1;
+  if JS_GetProperty(cx,obj,pchar('scale'),@ss) = JS_TRUE then
+    scale := JSValToInt(ss);
   //writeln('-- this is echo with ',argc,' arguments obj=',longword(obj),' --');
   for i := 0 to argc-1 do
   begin
@@ -178,7 +183,12 @@ begin
     if JSValIsInt(pom^) then
       write(JSValToInt(pom^));
     if JSValIsDouble(pom^) then
-      write(JSValToDouble(cx,pom^));
+    begin
+      if scale > 0 then
+        write(JSValToDouble(cx,pom^):1:scale)
+      else
+        write(JSValToDouble(cx,pom^));
+    end;
     if JSValIsBoolean(pom^) then
       write(JSValToBoolean(pom^));
   end;
