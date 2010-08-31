@@ -63,11 +63,17 @@ var E = Math.E;
 function fact(n) { 
   if (n <= 1) 
     return 1; 
-  return n * fact(n-1); 
+  return 1 * n * fact(n-1); 
 }
 
 // clear screen hack
 var cls = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 var clear = cls;
 
-//var scale = 2;
+// real numbers displayed digits 
+var scale = 2;
+
+// first string in echo will indent all displayed results
+var indent = '> ';
+var suffix = '\n\n';
+
