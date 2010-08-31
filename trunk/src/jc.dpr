@@ -44,7 +44,7 @@ begin
       continue;
     end;
     // everything else pass through echo
-    parsed := JSScript.Evaluate('echo('+cmd+',"\n");');
+    parsed := JSScript.Evaluate('echo(indent,'+cmd+',suffix);');
     if not parsed then
       writeln('error: cannot evaluate script');
   until (cmd='q')or(cmd='quit')or(cmd='exit');
