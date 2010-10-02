@@ -24,8 +24,15 @@ begin
   JSScript := JSRuntime.CreateScript();
   // include main library jc.js
   if FileExists('jc.js') then
+  begin
     if not JSScript.EvaluateFile('jc.js') then
       writeln('error: cannot evaluate implicit library "jc.js"');
+  end;
+  if FileExists('/usr/local/bin/jc.js') then
+  begin
+    if not JSScript.EvaluateFile('/usr/local/bin/jc.js') then
+      writeln('error: cannot evaluate implicit library "/usr/local/bin/jc.js"');
+  end;
   // main loop
   repeat
     readln(cmd);
