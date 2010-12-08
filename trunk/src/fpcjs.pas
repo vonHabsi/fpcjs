@@ -112,16 +112,28 @@ begin
   for i := 0 to argc-1 do
   begin
     {$ifndef fpc}
-    inc(argv,i);
-    pom := pjsval(argv^);
-    dec(argv,i);
+    // inc(argv,i); pom := pjsval(argv^); dec(argv,i);}   // this original code does not work in delphi 7
+    // pom := TArrayOfPjsval(argv)[i];                    // for some reason this is not working either, assuming type TArrayOfPjsval = array of pjsval;
+    pom := pjsval(integer(argv)+i*sizeof(pjsval));        // working hack
     {$else}
     pom := pjsval(argv+i);
     {$endif}
-    if JSValIsString(pom^) then va[i] := JSStringToString(JSValToJSString(pom^));
-    if JSValIsInt(pom^) then va[i] := JSValToInt(pom^);
-    if JSValIsDouble(pom^) then va[i] := JSValToDouble(cx,pom^);
-    if JSValIsBoolean(pom^) then va[i] := JSValToBoolean(pom^);
+    if JSValIsNull(pom^) then
+      va[i] := null;
+    if JSValIsVoid(pom^) then
+      va[i] := null;
+    if JSValIsObject(pom^) then
+      va[i] := pom^;
+    {if JSValIsNumber(pom^) then
+      write('[Number]');}
+    if JSValIsString(pom^) then
+      va[i] := JSStringToString(JSValToJSString(pom^));
+    if JSValIsInt(pom^) then
+      va[i] := JSValToInt(pom^);
+    if JSValIsDouble(pom^) then
+      va[i] := JSValToDouble(cx,pom^);
+    if JSValIsBoolean(pom^) then
+      va[i] := JSValToBoolean(pom^);
   end;
   result := va;
 end;
