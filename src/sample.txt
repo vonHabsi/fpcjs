@@ -1,0 +1,12 @@
+object QRLabel1: TQRLabel
+  Left = 336
+  Top = 264
+end
+object QRLabel2: TQRLabel
+  Left = 336
+  Top = 264
+end
+object QRLabel3: TQRLabel
+  Left = 336
+  Top = 264
+end
