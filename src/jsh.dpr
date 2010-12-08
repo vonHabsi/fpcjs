@@ -35,6 +35,7 @@ JS Pseudocode
   grep object
   ...  
 
+
 }
 
 {$ifdef FPC}
@@ -52,9 +53,9 @@ var
   cmd : string;
   parsed : boolean;
 
-function jsh_cat(cx: PJSContext; obj: PJSObject; argc: uintN; argv, rval: pjsval): JSBool; cdecl;
+function jsh_cat_file(cx: PJSContext; obj: PJSObject; argc: uintN; argv, rval: pjsval): JSBool; cdecl;
 {*
-Load multiple files or URLs into array, probably separated by EOL
+Load multiple files into array, probably separated by EOL
 }
 var i : integer;
     params : TVariantArray;
@@ -89,18 +90,21 @@ begin
   JSRuntime := TFpcJsRunTime.Create();
   JSScript := JSRuntime.CreateScript();
 
+  // bind special jsh functions
+  JS_DefineFunction(JSScript.cx, JSScript.gl, 'jsh_cat_file', @jsh_cat_file, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
+
   // include main library jsh.js
   if FileExists('jsh.js') then
     if not JSScript.EvaluateFile('jsh.js') then
       writeln('error: cannot evaluate implicit library "jsh.js"');
 
-  // bind special functions
-  JS_DefineFunction(JSScript.cx, JSScript.gl, 'jsh_cat', @jsh_cat, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
+{  cmd := 'var s = cat("sample.txt"); echo(s.length);';
 
   // parse testing script
-  parsed := JSScript.Evaluate('echo("aaa\n");  var s = jsh_cat(''sample.txt''); echo("s = ",s," lines=",s.split("\n").length,"\n");');
+  parsed := JSScript.Evaluate(cmd);
   if not parsed then
-    writeln('error: cannot evaluate script');
+    writeln('error: cannot evaluate script: '+cmd);
+          }
 
   writeln;
   writeln('DONE');
