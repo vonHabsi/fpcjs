@@ -57,3 +57,11 @@ dump(a,'5');
 for (var i in a)
   echo('  '+a[i]+'.Caption := inttostr(a[][]);\n');
 
+/*
+
+cat 'sample.txt' | grep object | sed ':' '' | sed ' ' '\n' | grep 'qrl' | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';
+
+cat sample.txt | grep object | sed ':' '' | sed ' ' '\n' | grep qrl | foreach echo '  %.Caption := inttostr(a[][]);\n';
+
+*/
+
