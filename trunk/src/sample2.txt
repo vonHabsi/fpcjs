@@ -1,0 +1,6 @@
+apple
+peach
+cherry
+banana
+potato
+tomato
