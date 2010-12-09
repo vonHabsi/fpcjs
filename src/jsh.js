@@ -39,23 +39,50 @@ function sed(AInput,AFind,AReplace) {
 
 // testing code
 
-var a = cat('sample.txt');
-dump(a,'1');
+function test() {
+  var a = cat('sample.txt');
+  dump(a,'1');
 
-var a = grep(a,'object');
-dump(a,'2');
+  var a = grep(a,'object');
+  dump(a,'2');
 
-var a = sed(a,':','');
-dump(a,'3');
+  var a = sed(a,':','');
+  dump(a,'3');
 
-var a = sed(a,/ /g,'\n');
-dump(a,'4');
+  var a = sed(a,/ /g,'\n');
+  dump(a,'4');
 
-var a = grep(a,'qrl');
-dump(a,'5');
+  var a = grep(a,'qrl');
+  dump(a,'5');
 
-for (var i in a)
-  echo('  '+a[i]+'.Caption := inttostr(a[][]);\n');
+  for (var i in a)
+    echo('  '+a[i]+'.Caption := inttostr(a[][]);\n');
+}
+
+s = "cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl' | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';";
+echo(s+'\n\n');
+
+a = s.split('|');
+dump(a,'a');
+
+function trim(AText) {
+  return AText.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+
+for (var i=0; i<a.length; i++) {
+  // first command in pipe
+  aa = trim(a[i]);
+  echo('aa='+aa+"\n");
+
+  // split commend in command and attributes
+  // TODO: must parse by characters to understand quotes
+  cc = aa.split(' ');
+  dump(cc,'cc');
+
+  // convert it to jsh command
+  echo('>>>  x = '+cc[0]+'(x,'+cc[1]+');\n');
+}
+
 
 /*
 
