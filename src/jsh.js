@@ -1,8 +1,13 @@
 // jsh main library
 
+/*
+TODO: parse parameter by strings, now if param is ' ' it will be split because there is space
+
+*/
+
 // core bindings
 
-function cat(AFileName) {
+function cat(AInput,AFileName) {
   // load local file and split it into array separated by EOL
   return jsh_cat_file(AFileName).split('\n');
 }
@@ -59,7 +64,7 @@ function test() {
     echo('  '+a[i]+'.Caption := inttostr(a[][]);\n');
 }
 
-s = "cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl' | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';";
+s = "cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl'"; // | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';";
 echo(s+'\n\n');
 
 a = s.split('|');
@@ -69,6 +74,8 @@ function trim(AText) {
   return AText.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
+var jsh_array = new Array();
+
 for (var i=0; i<a.length; i++) {
   // first command in pipe
   aa = trim(a[i]);
@@ -77,11 +84,15 @@ for (var i=0; i<a.length; i++) {
   // split commend in command and attributes
   // TODO: must parse by characters to understand quotes
   cc = aa.split(' ');
-  dump(cc,'cc');
+  //dump(cc,'cc');
 
   // convert it to jsh command
-  echo('>>>  x = '+cc[0]+'(x,'+cc[1]+');\n');
+  var ss = 'jsh_array = '+cc[0]+'(jsh_array,'+cc[1]+')';
+  echo('>>>  '+ss+'\n');
+//  eval(ss);
 }
+
+//dump(jsh_array,'jsh_array');
 
 
 /*

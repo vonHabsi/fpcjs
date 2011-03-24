@@ -16,23 +16,19 @@ uses
 var
   JSRuntime: TFpcJsRuntime;
   JSScript: TFpcJsScript;
-  cmd : string;
+  cmd, jclib : string;
   parsed : boolean;
 
 begin
   JSRuntime := TFpcJsRunTime.Create();
   JSScript := JSRuntime.CreateScript();
   // include main library jc.js
-  if FileExists('jc.js') then
-  begin
-    if not JSScript.EvaluateFile('jc.js') then
-      writeln('error: cannot evaluate implicit library "jc.js"');
-  end;
-  if FileExists('/usr/local/bin/jc.js') then
-  begin
-    if not JSScript.EvaluateFile('/usr/local/bin/jc.js') then
-      writeln('error: cannot evaluate implicit library "/usr/local/bin/jc.js"');
-  end;
+  jclib := GetEnvironmentVariable('FPCJS_PATH')+'jc.js';
+  if not FileExists(jclib) then
+    writeln('error: cannot locate main jc library "'+jclib+'"'); 
+  if FileExists(jclib) then
+    if not JSScript.EvaluateFile(jclib) then
+      writeln('error: cannot evaluate implicit library "'+jclib+'"');
   // main loop
   repeat
     readln(cmd);
@@ -52,7 +48,10 @@ begin
     end;
     // everything else pass through echo
     parsed := JSScript.Evaluate('echo(indent,'+cmd+',suffix);');
+    // if it cannot be parsed throught echo, run it as is
     if not parsed then
+      parsed := JSScript.Evaluate(cmd);
+    if not parsed then 
       writeln('error: cannot evaluate script');
   until (cmd='q')or(cmd='quit')or(cmd='exit');
 end.
