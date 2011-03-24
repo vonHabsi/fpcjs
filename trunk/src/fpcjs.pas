@@ -67,7 +67,7 @@ type
   public
     cx : PJSContext;
     gl : PJSObject;
-    fu : PJSFunction;
+    fu,fu1,fu2 : PJSFunction;
     Runtime : TFpcJsRuntime;
     constructor Create(ARuntime : TFpcJsRuntime); virtual;
     destructor Destroy; override;
@@ -199,12 +199,32 @@ begin
       if scale > 0 then
         write(JSValToDouble(cx,pom^):1:scale)
       else
+      if scale = 0 then
+        write(round(JSValToDouble(cx,pom^)))
+      else
         write(JSValToDouble(cx,pom^));
     end;
     if JSValIsBoolean(pom^) then
       write(JSValToBoolean(pom^));
   end;
   Result := JS_TRUE;
+end;
+
+function fpcjs_write(cx: PJSContext; obj: PJSObject; argc: uintN; argv, rval: pjsval): JSBool; cdecl;
+{*
+Alias for echo(...);
+}
+begin
+  result := echo(cx,obj,argc,argv,rval);
+end;
+
+function fpcjs_writeln(cx: PJSContext; obj: PJSObject; argc: uintN; argv, rval: pjsval): JSBool; cdecl;
+{*
+Alias for echo(...+'\n');
+}
+begin
+  result := echo(cx,obj,argc,argv,rval);
+  writeln;
 end;
 
 { TFpcJsRuntime }
@@ -257,6 +277,8 @@ begin
 	  	writeln('Error JS_InitStandardClasses: ',e.Message);
   end;
   fu := JS_DefineFunction(cx, gl, 'echo', @echo, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
+  fu1 := JS_DefineFunction(cx, gl, 'write', @fpcjs_write, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
+  fu2 := JS_DefineFunction(cx, gl, 'writeln', @fpcjs_writeln, 0, JSPROP_ENUMERATE or JSPROP_EXPORTED);
 end;
 
 destructor TFpcJsScript.Destroy;
