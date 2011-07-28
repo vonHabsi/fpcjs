@@ -1,8 +1,9 @@
 // jsh main library
 
 /*
-TODO: parse parameter by strings, now if param is ' ' it will be split because there is space
-
+TODO:
+ 
+- parse parameter as quoted strings, now if param is ' ' it will be split because there is space
 */
 
 // core bindings
@@ -12,12 +13,19 @@ function cat(AInput,AFileName) {
   return jsh_cat_file(AFileName).split('\n');
 }
 
+// utilities
+
 function dump(AInput,ANote) {
   // echo array to stdout for debug purposes
   echo(ANote+':\n');
   for (var i = 0; i < AInput.length; i++)
     echo('  ['+i+']: '+AInput[i]+'\n');
   echo('\n\n');
+}
+
+function trim(AText) {
+  // remove empty spaces from begining and end of string
+  return AText.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
 // filters
@@ -44,8 +52,23 @@ function sed(AInput,AFind,AReplace) {
 
 // testing code
 
+function test4() {
+  // load testing files
+  var a = cat(null,'sample.txt');
+  var b = cat(null,'sample2.txt');
+  dump(a,'a');
+  dump(b,'b');
+  
+  // grep words containg "to"
+  var c = grep(b,'to');
+  dump(c,'c');
+}
+
+test();
+
 function test() {
-  var a = cat('sample.txt');
+  // equivalent for bash script: cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl'" | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n'; 
+  var a = cat(null,'sample.txt');
   dump(a,'1');
 
   var a = grep(a,'object');
@@ -64,42 +87,35 @@ function test() {
     echo('  '+a[i]+'.Caption := inttostr(a[][]);\n');
 }
 
-s = "cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl'"; // | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';";
-echo(s+'\n\n');
-
-a = s.split('|');
-dump(a,'a');
-
-function trim(AText) {
-  return AText.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+function test2() {
+  s = "cat 'sample.txt' | grep 'object' | sed ':' '' | sed ' ' '\n' | grep 'qrl'"; // | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';";
+  echo(s+'\n\n');
+  a = s.split('|');
+  dump(a,'a');
 }
 
-var jsh_array = new Array();
-
-for (var i=0; i<a.length; i++) {
-  // first command in pipe
-  aa = trim(a[i]);
-  echo('aa='+aa+"\n");
-
-  // split commend in command and attributes
-  // TODO: must parse by characters to understand quotes
-  cc = aa.split(' ');
-  //dump(cc,'cc');
-
-  // convert it to jsh command
-  var ss = 'jsh_array = '+cc[0]+'(jsh_array,'+cc[1]+')';
-  echo('>>>  '+ss+'\n');
-//  eval(ss);
+function test3() {
+  var jsh_array = new Array();
+  for (var i=0; i<a.length; i++) {
+    // first command in pipe
+    aa = trim(a[i]);
+    echo('aa='+aa+"\n");
+  
+    // split commend in command and attributes
+    // TODO: must parse by characters to understand quotes
+    cc = aa.split(' ');
+    //dump(cc,'cc');
+  
+    // convert it to jsh command
+    var ss = 'jsh_array = '+cc[0]+'(jsh_array,'+cc[1]+')';
+    echo('>>>  '+ss+'\n');
+  //  eval(ss);
+  }
+  //dump(jsh_array,'jsh_array');
 }
-
-//dump(jsh_array,'jsh_array');
-
-
+ 
 /*
-
 cat 'sample.txt' | grep object | sed ':' '' | sed ' ' '\n' | grep 'qrl' | for (var i in a) echo '  '+a[i]+'.Caption := inttostr(a[][]);\n';
-
 cat sample.txt | grep object | sed ':' '' | sed ' ' '\n' | grep qrl | foreach echo '  %.Caption := inttostr(a[][]);\n';
-
 */
 
