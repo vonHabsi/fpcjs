@@ -75,6 +75,10 @@ type
     function EvaluateFile(AFileName : string) : boolean;
     function Call(AFunctionName : string; AParameters : array of const) : Variant;
     function GetValue(APropertyName : string) : variant; 
+    function GetValueAsInteger(APropertyName : string) : integer; 
+    function GetValueAsDouble(APropertyName : string) : double; 
+    function GetValueAsString(APropertyName : string) : string; 
+    function GetValueAsBoolean(APropertyName : string) : boolean; 
     function SetValue(APropertyName : string; APropertyValue : variant) : boolean;
     procedure RegisterFunction(AName : string; ACallback : TFpcJsCallback);
     function RegisterNative(AName : string; ANative : JsNative) : PJsFunction;
@@ -392,6 +396,62 @@ begin
     result := NULL;
   end; 
 end;
+
+function TFpcJsScript.GetValueAsInteger(APropertyName : string) : integer;
+{*
+Get integer value of js variable
+}
+var rval : JSVal;
+begin
+  if JS_GetProperty(cx,gl,pchar(APropertyName),@rval) = JS_TRUE then
+    result := JSValToInt(rval)
+  else begin
+    writeln('error: undefined property "',APropertyName,'"'); 
+    result := NULL;
+  end; 
+end;
+ 
+function TFpcJsScript.GetValueAsDouble(APropertyName : string) : double; 
+{*
+Get double value of js variable
+}
+var rval : JSVal;
+begin
+  if JS_GetProperty(cx,gl,pchar(APropertyName),@rval) = JS_TRUE then
+    result := JSValToDouble(cx,rval)
+  else begin
+    writeln('error: undefined property "',APropertyName,'"'); 
+    result := NULL;
+  end; 
+end;
+ 
+function TFpcJsScript.GetValueAsString(APropertyName : string) : string; 
+{*
+Get string value of js variable
+}
+var rval : JSVal;
+begin
+  if JS_GetProperty(cx,gl,pchar(APropertyName),@rval) = JS_TRUE then
+    result := JSStringToString(JSValToJSString(rval))
+  else begin
+    writeln('error: undefined property "',APropertyName,'"'); 
+    result := NULL;
+  end; 
+end;
+
+function TFpcJsScript.GetValueAsBoolean(APropertyName : string) : boolean;
+{*
+Get boolean value of js variable
+}
+var rval : JSVal;
+begin
+  if JS_GetProperty(cx,gl,pchar(APropertyName),@rval) = JS_TRUE then
+    result := JSValToBoolean(rval)
+  else begin
+    writeln('error: undefined property "',APropertyName,'"'); 
+    result := NULL;
+  end; 
+end; 
 
 function TFpcJsScript.SetValue(APropertyName : string; APropertyValue : variant) : boolean; 
 {*
