@@ -1041,13 +1041,13 @@ begin
   Result := val shr 1;
   //shr doesn't handle signed types in the same way as C. If the source was
   //negative then merge in the missing 1 in position 31.
-  {$IFDEF FPC}
+  //{$IFDEF FPC}
   if val < 0 then
     Result := Result-maxint-1;
-  {$ELSE}
-  if val < 0 then
-    Result := -Result;
-  {$ENDIF}
+  //{$ELSE}
+  //if val < 0 then
+  //  Result := -Result;
+  //{$ENDIF}
 end;
 
 function JSValToBoolean(val: jsval): Boolean;
