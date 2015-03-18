@@ -109,8 +109,10 @@ s.RegisterFunction('pi',myPi);
 ```
 Then you can create script which will use this function:
 
+```pascal
 if not s.Evaluate('echo("pi is actually ",pi(5),"\n");') then
   writeln('error: evaluation 2 failed');
+```
 
 Will print:
 
