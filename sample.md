@@ -141,3 +141,6 @@ This incorporate 2 special functions - JsParams and JsResult. These functions co
 
 JavaScript console calculator demo
 
+![CalcImage1](http://lh6.ggpht.com/_LEf0YU1Sgf4/THzNk3J-G0I/AAAAAAAAAaU/-feXe0cqJ6Q/jc2.png)
+
+![CalcImage2](http://lh4.ggpht.com/_LEf0YU1Sgf4/TH06M6-fGUI/AAAAAAAAAao/NNWcJUGNrwA/jc.png)
